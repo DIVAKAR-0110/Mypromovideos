@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Company Profile — P2P</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+{% load static %}
+<link rel="icon" type="image/png" href="{% static 'analyzer/images/favicon.png' %}">
+<link rel="stylesheet" href="{% static 'analyzer/css/main.css' %}">
+<style>
+  .profile-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    background: var(--card);
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .profile-image-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--bg2);
+    border: 2px solid var(--border);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .profile-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .profile-image-wrapper svg {
+    width: 40px;
+    height: 40px;
+    color: var(--muted);
+  }
+  .profile-info h1 {
+    margin-bottom: 0.3rem;
+    color: var(--primary);
+  }
+  .profile-info p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--light);
+    font-size: 0.9rem;
+  }
+  .form-group input, .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15);
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <span class="brand-text">P2P</span>
+  </div>
+  <div style="display: flex; gap: 1.5rem; align-items: center;">
+    <a href="{% url 'index' %}" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 600;">Dashboard</a>
+    <span class="nav-tagline">Welcome, {{ request.session.company_name }}</span>
+    <a href="{% url 'logout' %}" style="color: var(--red); text-decoration: none; font-size: 0.9rem; font-weight: 600;">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-image-wrapper">
+        {% if company.company_image %}
+          <img src="{{ company.company_image.url }}" alt="{{ company.company_name }}">
+        {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        {% endif %}
+      </div>
+      <div class="profile-info">
+        <h1>{{ company.company_name }}</h1>
+        <p>{{ company.email }}</p>
+      </div>
+    </div>
+
+    <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="company_name">Company Name</label>
+        <input type="text" id="company_name" name="company_name" value="{{ company.company_name }}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Company Description</label>
+        <textarea id="description" name="description" rows="4" placeholder="Tell us about your brand...">{{ company.description|default:"" }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="company_image">Update Profile Image</label>
+        <input type="file" id="company_image" name="company_image" accept="image/*" style="padding: 0.5rem; background: var(--bg);">
+      </div>
+
+      <button type="submit" class="btn-analyze" style="margin-top: 2rem;">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>P2P (Prism to Pulse) &copy; 2026 &mdash; Video Competitor Intelligence Platform</p>
+</footer>
+</body>
+</html>

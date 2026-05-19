@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>P2P — Prism to Pulse Intelligence</title>
+  <meta name="description"
+    content="Analyse YouTube competitors and generate a professional PowerPoint report in minutes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  {% load static %}
+  <link rel="icon" type="image/png" href="{% static 'analyzer/images/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'analyzer/css/main.css' %}" />
+</head>
+
+<body>
+
+  <nav class="nav">
+    <div class="nav-brand">
+      <span class="brand-text">P2P</span>
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <span class="nav-tagline">Welcome, {{ request.session.company_name }}</span>
+      <a href="{% url 'profile' %}"
+        style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 600;">Profile</a>
+      <a href="{% url 'logout' %}"
+        style="color: var(--red); text-decoration: none; font-size: 0.9rem; font-weight: 600;">Logout</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Live YouTube Data &middot; Unfair Advantage</div>
+      <h1 class="hero-title">
+        Discover Your Competitors' <span class="gradient-text">Winning Strategies</span>
+      </h1>
+      <p class="hero-sub">
+        Tell us who you're up against. P2P instantly pulls their live YouTube metrics, uncovers the content themes they
+        are hiding, and generates a breathtaking, agency-grade strategy presentation in seconds.
+      </p>
+    </div>
+  </section>
+
+  <main class="container">
+
+    {% if past_reports %}
+    <section class="past-reports" style="margin-bottom: 3rem;">
+      <h2 class="section-title">Recent Intelligence Reports</h2>
+      <div class="features-grid">
+        {% for report in past_reports %}
+        <div class="feature-card"
+          style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <div
+            style="width: 80px; height: 80px; background: var(--bg2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; border: 2px solid var(--border);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <h3 style="margin-bottom: 0.5rem; color: var(--primary);">{{ report.report_name|default:report.own_company }}
+          </h3>
+          <p style="font-size: 0.8rem; margin-bottom: 1rem;">{{ report.created_at|date:"M d, Y H:i" }}</p>
+          <a href="{% url 'report' report.id %}" class="btn-analyze"
+            style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-top: auto; width: auto; display: inline-flex;">View
+            Report</a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="form-card" id="form-section">
+
+      <div class="form-header">
+        <h2>Start New Analysis</h2>
+        <p>We search YouTube automatically for each company's official channel.</p>
+      </div>
+
+      <form id="analyze-form" novalidate>
+        {% csrf_token %}
+
+        <div class="field-group">
+          <label for="report_name">Project or Report Name</label>
+          <input type="text" id="report_name" name="report_name" placeholder="e.g. Q3 Competitor Analysis"
+            autocomplete="off" />
+          <span class="field-hint">Defaults to comp-HH:MM:SS if left blank.</span>
+        </div>
+
+        <div class="field-group">
+          <label for="own_company">
+            Your Brand's Name <span class="required">*</span>
+          </label>
+
+          <input type="text" id="own_company" name="own_company" value="{{ company_name }}" readonly
+            autocomplete="off" />
+
+          <span class="field-hint">
+            Enter the full name as it appears on YouTube.
+          </span>
+        </div>
+
+        <div class="section-divider">
+          <span class="section-divider-label">Who are we analyzing?</span>
+          <span class="section-divider-sub">Choose up to 4 rivals</span>
+        </div>
+
+        <div class="saved-competitors"
+          style="margin-bottom: 1.5rem; background: var(--bg2); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+          <h3 style="font-size: .9rem; margin-bottom: .8rem; color: var(--primary);">Saved Competitors</h3>
+          <div id="saved-competitors-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+            {% for comp in saved_competitors %}
+            <span class="competitor-badge" data-id="{{ comp.id }}" data-name="{{ comp.name }}"
+              style="background: var(--white); border: 1px solid var(--border); padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; transition: border-color .2s;">
+              <span onclick="fillCompetitor('{{ comp.name|escapejs }}')" style="flex-grow: 1;">{{ comp.name }}</span>
+              <button type="button" onclick="deleteCompetitor({{ comp.id }})"
+                style="background: none; border: none; color: var(--red); cursor: pointer; font-weight: bold; font-size: 1rem; line-height: 1;"
+                title="Delete saved competitor">&times;</button>
+            </span>
+            {% empty %}
+            <p id="no-saved-msg" style="font-size: 0.8rem; color: var(--muted); width: 100%;">No saved competitors yet.
+            </p>
+            {% endfor %}
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="new-competitor-name" placeholder="Save a new competitor..."
+              style="flex: 1; height: 36px; padding: 0 0.8rem; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; background: var(--white);">
+            <button type="button" onclick="addCompetitor()" class="btn-add-competitor"
+              style="margin-top: 0; padding: 0 1rem; height: 36px; border-radius: 6px;">Save</button>
+          </div>
+        </div>
+
+        <div id="competitors-list">
+          <div class="competitor-row" id="comp-row-1">
+            <div class="field-group">
+              <label for="comp-1">Competitor 1 <span class="required">*</span></label>
+              <input type="text" id="comp-1" name="competitor" placeholder="e.g. Adidas" required autocomplete="off" />
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-add-competitor" id="btn-add" title="Add another competitor (up to 4 total)">
+          + Add Another Rival
+        </button>
+        <p class="add-hint" id="add-hint">You can add up to <strong>3 more</strong> competitors.</p>
+
+        <div class="submit-wrap">
+          <button type="submit" class="btn-analyze" id="submit-btn">
+            Generate Intelligence Report
+          </button>
+          <p class="submit-note">Analysis takes approximately 30–60 seconds.</p>
+        </div>
+      </form>
+    </div>
+
+    <div class="loading-card hidden" id="loading-card">
+      <div class="loading-spinner"></div>
+      <h3 class="loading-title">Analysing YouTube Data</h3>
+      <p class="loading-sub" id="loading-msg">
+        Searching for channels and fetching video data. This may take 30–60 seconds.
+      </p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="steps" id="steps-list">
+        <div class="step active" id="step-1">Searching YouTube channels</div>
+        <div class="step" id="step-2">Fetching video data</div>
+        <div class="step" id="step-3">Computing analytics</div>
+        <div class="step" id="step-4">Generating PowerPoint report</div>
+      </div>
+    </div>
+
+    <section class="features" id="features">
+      <h2 class="section-title">What You'll Discover</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-num">01</div>
+          <h3>Audience Footprint</h3>
+          <p>Compare total reach, video output, and view volume side-by-side to understand true market share.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">02</div>
+          <h3>Viral Breakdowns</h3>
+          <p>Identify exactly which videos are driving their growth so you can engineer similar success.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">03</div>
+          <h3>Content Gap Strategy</h3>
+          <p>We reveal the specific topics and themes they are actively covering that you are leaving on the table.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">04</div>
+          <h3>True Engagement Metrics</h3>
+          <p>Beyond vanity views—discover whose audience is actually interacting and loyal to their brand.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">05</div>
+          <h3>Publishing Cadence</h3>
+          <p>Learn exactly how often your rivals publish, giving you the algorithmic blueprint to beat them.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">06</div>
+          <h3>Actionable Roadmap</h3>
+          <p>Walk away with a bespoke, data-driven action plan crafted specifically to outmaneuver your competition.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>P2P (Prism to Pulse) &copy; 2026 &mdash; Video Competitor Intelligence Platform</p>
+  </footer>
+
+  <script src="{% static 'analyzer/js/main.js' %}"></script>
+</body>
+
+</html>

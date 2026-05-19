@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P2P — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+{% load static %}
+<link rel="icon" type="image/png" href="{% static 'analyzer/images/favicon.png' %}">
+<link rel="stylesheet" href="{% static 'analyzer/css/intro.css' %}">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">P2P</div>
+  <button class="hamburger" onclick="toggleMenu()">☰</button>
+  <div class="nav-links" id="nav-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="{% url 'login' %}" class="btn-login">Login</a>
+    <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Dominate Your YouTube Niche</h1>
+  <p>Stop guessing what works. Discover exactly how your competitors are growing their audience and generate stunning, board-ready strategy reports in seconds. Because great marketing starts with great intelligence.</p>
+  <a href="{% url 'signup' %}" class="btn-signup">Claim Your Advantage Now</a>
+</section>
+
+<section class="how-it-works" id="how-it-works">
+  <h2>How It All Comes Together</h2>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <h3>Claim Your Workspace</h3>
+      <p>Set up your company profile in seconds. We keep your competitive analysis completely private and secure.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <h3>Identify Key Rivals</h3>
+      <p>Just type in who you want to beat. Our intelligent engine scours YouTube to find their official channels instantly.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <h3>Unlock Strategic Insights</h3>
+      <p>Download a breathtaking, agency-grade PowerPoint deck packed with deep engagement analytics and actionable advice.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>&copy; 2026 P2P (Prism to Pulse). All rights reserved.</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    const nav = document.getElementById('nav-links');
+    nav.classList.toggle('active');
+  }
+</script>
+</body>
+</html>

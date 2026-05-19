@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — P2P</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  {% load static %}
+  <link rel="icon" type="image/png" href="{% static 'analyzer/images/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'analyzer/css/intro.css' %}">
+  <style>
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-right: 2.5rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--brown-font);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .toggle-password:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <a href="{% url 'intro' %}" class="nav-brand">P2P</a>
+  </nav>
+
+  <div class="auth-container">
+    <h2 style="margin-bottom: 0.5rem;">Create Your Workspace</h2>
+    <p style="text-align: center; color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem;">Join P2P and unlock
+      actionable YouTube insights today.</p>
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+    <form class="auth-form" method="POST" action="{% url 'signup' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="company_name">Company Name</label>
+        <input type="text" id="company_name" name="company_name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required>
+          <button type="button" class="toggle-password" onclick="togglePassword('password', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-open">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-closed"
+              style="display:none;">
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+              </path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="confirm-password" name="confirm-password" required>
+          <button type="button" class="toggle-password" onclick="togglePassword('confirm-password', this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-open">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-closed"
+              style="display:none;">
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+              </path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-submit">Sign Up</button>
+    </form>
+    <p style="text-align: center; margin-top: 1.5rem;">
+      Already apart of the platform? <a href="{% url 'login' %}"
+        style="font-weight: 600; text-decoration: underline;">Log
+        In</a>
+    </p>
+  </div>
+</body>
+<script>
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const pass1 = document.getElementById('password').value;
+    const pass2 = document.getElementById('confirm-password').value;
+    if (pass1 !== pass2) {
+      e.preventDefault();
+
+      let errorDiv = document.querySelector('.error-msg');
+      if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'error-msg';
+        const form = document.querySelector('.auth-form');
+        form.parentNode.insertBefore(errorDiv, form);
+      }
+      errorDiv.textContent = 'Passwords do not match!';
+    }
+  });
+
+  function togglePassword(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+    const eyeOpen = btn.querySelector('.eye-open');
+    const eyeClosed = btn.querySelector('.eye-closed');
+    if (input.type === 'password') {
+      input.type = 'text';
+      eyeOpen.style.display = 'none';
+      eyeClosed.style.display = 'block';
+    } else {
+      input.type = 'password';
+      eyeOpen.style.display = 'block';
+      eyeClosed.style.display = 'none';
+    }
+  }
+</script>
+
+</html>

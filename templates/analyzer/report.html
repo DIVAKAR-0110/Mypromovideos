@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>P2P Report — {{ report.own_company }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  {% load static %}
+  <link rel="icon" type="image/png" href="{% static 'analyzer/images/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'analyzer/css/main.css' %}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .report-hero {
+      position: relative;
+      padding: 20px;
+    }
+
+    .report-hero button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+
+      background-color: brown;
+      color: white;
+
+      border: none;
+      outline: none;
+
+      padding: 10px 18px;
+      border-radius: 8px;
+
+      font-size: 15px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      transition: 0.3s ease;
+    }
+
+    .report-hero button:hover {
+      background-color: #5c1f1f;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-brand">
+      <span class="brand-text">P2P</span>
+    </a>
+    <a href="{% url 'download_pptx' report.pk %}" class="btn-download">
+      ⬇ Download PowerPoint
+    </a>
+  </nav>
+
+  {% with analysis=report.get_analysis %}
+  {% with channel_data=report.get_channel_data %}
+
+  <div class="report-hero">
+    <button onclick="window.history.back()">
+      ← Back to Home
+    </button>
+    <div class="report-hero-content">
+      <div class="hero-badge">📊 Intelligence Report</div>
+      <h1 class="hero-title">{{ report.own_company }} <span class="gradient-text">vs Competition</span></h1>
+      <p class="hero-sub">Generated on {{ report.created_at|date:"d M Y, H:i" }} UTC &nbsp;·&nbsp;
+        {{ report.get_competitors|length }} competitor{{ report.get_competitors|length|pluralize }} analysed</p>
+    </div>
+  </div>
+
+  <div class="container report-container">
+
+    <section class="report-section">
+      <h2 class="section-title">📺 Channel Overview</h2>
+      <div class="cards-grid">
+        {% for company, data in analysis.items %}
+        {% with ch=data.channel %}
+        <div class="stat-card {% if company == report.own_company %}stat-card--own{% endif %}">
+          <div class="stat-card-header">
+            {% if company == report.own_company %}<span class="own-badge">Your Company</span>{% endif %}
+            <h3>{{ company }}</h3>
+            {% if ch.country %}<span class="country-badge">{{ ch.country }}</span>{% endif %}
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-item">
+              <span class="stat-value">{{ ch.subscribers|default:0|floatformat:0 }}</span>
+              <span class="stat-label">Subscribers</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">{{ ch.total_videos|default:0 }}</span>
+              <span class="stat-label">Videos</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">{{ ch.total_views|default:0|floatformat:0 }}</span>
+              <span class="stat-label">Total Views</span>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">📈 Subscriber Comparison</h2>
+      <div class="chart-wrap">
+        <canvas id="subChart"></canvas>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">💬 Engagement Analysis</h2>
+      <div class="engagement-grid">
+        {% for company, data in analysis.items %}
+        {% with a=data.analytics %}
+        <div class="eng-card">
+          <h4>{{ company }}</h4>
+          <div class="eng-metrics">
+            <div class="eng-metric">
+              <span class="eng-val accent">{{ a.avg_views|default:0|floatformat:0 }}</span>
+              <span class="eng-label">Avg Views</span>
+            </div>
+            <div class="eng-metric">
+              <span class="eng-val gold">{{ a.avg_likes|default:0|floatformat:0 }}</span>
+              <span class="eng-label">Avg Likes</span>
+            </div>
+            <div class="eng-metric">
+              <span class="eng-val">{{ a.avg_comments|default:0|floatformat:0 }}</span>
+              <span class="eng-label">Avg Comments</span>
+            </div>
+            <div class="eng-metric">
+              <span class="eng-val primary">{{ a.avg_engagement_rate|default:0 }}%</span>
+              <span class="eng-label">Engagement</span>
+            </div>
+            <div class="eng-metric">
+              <span class="eng-val" style="color: var(--accent);">{{ a.intelligence_score|default:0 }}</span>
+              <span class="eng-label">Intelligence Score</span>
+            </div>
+          </div>
+          <div class="posting-freq">
+            <span class="freq-label">📅 {{ a.posting_frequency_per_month|default:0 }} posts/month</span>
+          </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">📊 Engagement Rate Comparison</h2>
+      <div class="chart-wrap chart-wrap--sm">
+        <canvas id="engChart"></canvas>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">🏆 Top Performing Videos</h2>
+      {% for company, data in analysis.items %}
+      <div class="top-vid-group">
+        <h3 class="group-title">{{ company }}</h3>
+        <div class="vid-list">
+          {% for vid in data.analytics.top_videos %}
+          <a href="{{ vid.url }}" target="_blank" class="vid-card">
+            {% if vid.thumbnail %}
+            <img src="{{ vid.thumbnail }}" alt="{{ vid.title }}" class="vid-thumb" loading="lazy" />
+            {% else %}
+            <div class="vid-thumb vid-thumb--placeholder">📹</div>
+            {% endif %}
+            <div class="vid-info">
+              <p class="vid-title">{{ vid.title|truncatechars:70 }}</p>
+              <div class="vid-stats">
+                <span>👁 {{ vid.views|floatformat:0 }}</span>
+                <span>👍 {{ vid.likes|floatformat:0 }}</span>
+                <span>💬 {{ vid.comments|floatformat:0 }}</span>
+              </div>
+            </div>
+          </a>
+          {% empty %}
+          <p class="empty-msg">No video data available.</p>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="report-section">
+      <h2 class="section-title">🧩 Content Themes</h2>
+      <div class="themes-grid">
+        {% for company, data in analysis.items %}
+        <div class="theme-card">
+          <h4>{{ company }}</h4>
+          <div class="tag-list">
+            {% for theme in data.analytics.content_themes %}
+            <span class="tag">{{ theme }}</span>
+            {% empty %}
+            <span class="empty-msg">No theme data</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="download-cta">
+      <div class="cta-content">
+        <h2>📥 Download Full PowerPoint Report</h2>
+        <a href="{% url 'download_pptx' report.pk %}" class="btn-analyze"
+          style="display:inline-flex;width:auto;margin-top:1rem;">
+          <span class="btn-text">Download .pptx Report</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+  {% endwith %}
+  {% endwith %}
+
+  <footer class="footer">
+    <p>P2P (Prism to Pulse) &copy; 2026 &mdash; Video Competitor Intelligence Platform</p>
+  </footer>
+
+  <script>
+    const REPORT_DATA = {{ report.get_analysis|safe|default:"{}" }};
+  </script>
+  <script src="{% static 'analyzer/js/report.js' %}"></script>
+</body>
+
+</html>

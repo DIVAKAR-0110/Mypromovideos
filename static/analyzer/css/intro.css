@@ -1,0 +1,249 @@
+/* Intro Page Styles */
+:root {
+  --yellow-bg: #FFF9C4; /* Light yellow */
+  --brown-font: #5D4037; /* Brown */
+  --brown-dark: #3E2723;
+  --white: #FFFFFF;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--yellow-bg);
+  color: var(--brown-font);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--yellow-bg);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 2px solid rgba(93, 64, 55, 0.1);
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--brown-dark);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-links a {
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.nav-links a:hover {
+  opacity: 0.7;
+}
+
+.btn-login, .btn-signup {
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+.btn-login {
+  border: 2px solid var(--brown-font);
+}
+
+.btn-signup {
+  background-color: var(--brown-font);
+  color: var(--yellow-bg);
+}
+
+.hamburger {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--brown-font);
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  color: var(--brown-dark);
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.hero .btn-signup {
+  font-size: 1.2rem;
+  padding: 0.8rem 2rem;
+  display: inline-block;
+}
+
+/* How It Works */
+.how-it-works {
+  padding: 4rem 1.5rem;
+  background-color: rgba(93, 64, 55, 0.05);
+}
+
+.how-it-works h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 3rem;
+  color: var(--brown-dark);
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.step-card {
+  flex: 1;
+  min-width: 250px;
+  background: var(--white);
+  padding: 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.1);
+}
+
+.step-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--yellow-bg);
+  background: var(--brown-font);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 1rem auto;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--brown-dark);
+  color: var(--yellow-bg);
+}
+
+/* Forms (Login/Signup) */
+.auth-container {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(93, 64, 55, 0.15);
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--brown-dark);
+}
+
+.auth-form .form-group {
+  margin-bottom: 1.2rem;
+}
+
+.auth-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid rgba(93, 64, 55, 0.3);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--brown-font);
+  box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.2);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--brown-font);
+  color: var(--yellow-bg);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.error-msg {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--yellow-bg);
+    padding: 1rem 0;
+    border-bottom: 2px solid rgba(93, 64, 55, 0.1);
+  }
+  
+  .nav-links.active {
+    display: flex;
+  }
+  
+  .hamburger {
+    display: block;
+  }
+}
